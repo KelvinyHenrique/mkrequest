@@ -5,16 +5,43 @@ Componente de request, feito com intuito de deixar mais fácil a comunicação v
 
 # Exemplo
 
-```
-#include <stdio.h>
-#include "requests.h"
+```c++
+#include <iostream>
+#include <string.h>
+#include <stdlib.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_log.h"
 #include "esp_system.h"
+#include "nvs_flash.h"
+#include "esp_event.h"
+#include "esp_netif.h"
+#include "protocol_examples_common.h"
+#include "esp_tls.h"
+
+#include "esp_http_client.h"
+#include "requests.h"
+
+#define MAX_HTTP_RECV_BUFFER 512
+#define MAX_HTTP_OUTPUT_BUFFER 2048
+static const char *TAG = "HTTP_CLIENT";
 
 extern "C"
 {
   void app_main();
 }
+
+static void http_test_task(void *pvParameters)
+{
+  string webserver = "httpbin.org";
+  string webpath = "/get";
+  string params = "nome=kelviny&sobrenome=henrique";
+  Requests *request = new Requests();
+  cout <<  request->get(webserver, webpath, params) << std::endl;
+  ESP_LOGI(TAG, "Finish http example");
+  vTaskDelete(NULL);
+}
+
 
 void app_main(void)
 {
@@ -30,17 +57,6 @@ void app_main(void)
   ESP_ERROR_CHECK(example_connect());
   ESP_LOGI(TAG, "Connected to AP, begin http example");
  xTaskCreate(&http_test_task, "http_test_task", 8192, NULL, 5, NULL);
-}
-
-static void http_test_task(void *pvParameters)
-{
-  string webserver = "httpbin.org";
-  string webpath = "/get";
-  string params = "nome=kelviny&sobrenome=henrique";
-  Requests *request = new Requests();
-  cout <<  request->get(webserver, webpath, params) << std::endl;
-  ESP_LOGI(TAG, "Finish http example");
-  vTaskDelete(NULL);
 }
 
 
