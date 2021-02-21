@@ -5,7 +5,7 @@ Componente de request, feito com intuito de deixar mais fácil a comunicação v
 
 # Exemplo
 
-`
+```
 #include <stdio.h>
 #include "requests.h"
 #include "esp_log.h"
@@ -44,4 +44,4 @@ static void http_test_task(void *pvParameters)
 }
 
 
-`
+```
