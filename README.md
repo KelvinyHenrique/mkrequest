@@ -2,6 +2,12 @@
 
 
 Componente de request, feito com intuito de deixar mais fácil a comunicação via api com o esp32
+# Importação
+
+Basta clonar este repositorio para a pasta [esp]/esp-idf/components
+
+` https://github.com/KelvinyHenrique/Monkey-Request.git `
+
 
 # Exemplo
 
