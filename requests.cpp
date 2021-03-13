@@ -17,6 +17,9 @@ using namespace std;
 #define MAX_HTTP_RECV_BUFFER 512
 #define MAX_HTTP_OUTPUT_BUFFER 2048
 static const char *TAG = "HTTP_CLIENT";
+const char *RESPONSE_DATA = {};
+int RESPONSE_DATA_LEN;
+char local_response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
 
 esp_err_t _http_event_handle(esp_http_client_event_t *evt)
 {
@@ -39,7 +42,9 @@ esp_err_t _http_event_handle(esp_http_client_event_t *evt)
         ESP_LOGI(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
         if (!esp_http_client_is_chunked_response(evt->client))
         {
-            printf("%.*s", evt->data_len, (char *)evt->data);
+              RESPONSE_DATA = (char *)evt->data;
+              RESPONSE_DATA_LEN =  evt->data_len;
+          
         }
 
         break;
@@ -55,16 +60,6 @@ esp_err_t _http_event_handle(esp_http_client_event_t *evt)
 
 string Requests::get(string webserver, string webpath, string params)
 {
-
-    char local_response_buffer[MAX_HTTP_OUTPUT_BUFFER] = {0};
-    /**
-     * NOTE: All the configuration parameters for http_client must be spefied either in URL or as host and path parameters.
-     * If host and path parameters are not set, query parameter will be ignored. In such cases,
-     * query parameter should be specified in URL.
-     *
-     * If URL as well as host and path parameters are specified, values of host and path will be considered.
-     */
-
     esp_http_client_config_t config = {
         .host = webserver.c_str(),
         .path = webpath.c_str(),
@@ -89,5 +84,34 @@ string Requests::get(string webserver, string webpath, string params)
     ESP_LOG_BUFFER_HEX(TAG, local_response_buffer, strlen(local_response_buffer));
     esp_http_client_cleanup(client);
 
-    return webserver;
+    return RESPONSE_DATA;
+}
+
+string Requests::get(string webserver, string webpath, string params)
+{
+    esp_http_client_config_t config = {
+        .host = webserver.c_str(),
+        .path = webpath.c_str(),
+        .query = params.c_str(),
+        .event_handler = _http_event_handle,
+        .user_data = local_response_buffer, // Pass address of local buffer to get response
+    };
+    esp_http_client_handle_t client = esp_http_client_init(&config);
+
+    // GET
+    esp_err_t err = esp_http_client_perform(client);
+    if (err == ESP_OK)
+    {
+        ESP_LOGI(TAG, "HTTP GET Status = %d, content_length = %d",
+                 esp_http_client_get_status_code(client),
+                 esp_http_client_get_content_length(client));
+    }
+    else
+    {
+        ESP_LOGE(TAG, "HTTP GET request failed: %s", esp_err_to_name(err));
+    }
+    ESP_LOG_BUFFER_HEX(TAG, local_response_buffer, strlen(local_response_buffer));
+    esp_http_client_cleanup(client);
+
+    return RESPONSE_DATA;
 }
