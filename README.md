@@ -6,7 +6,7 @@ Componente de request, feito com intuito de deixar mais fácil a comunicação v
 
 Basta clonar este repositorio para a pasta [esp]/esp-idf/components
 
-` https://github.com/KelvinyHenrique/Monkey-Request.git `
+` https://github.com/KelvinyHenrique/mkrequest.git `
 
 
 # Exemplo
