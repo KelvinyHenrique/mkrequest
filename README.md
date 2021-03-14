@@ -36,5 +36,5 @@ ir em Example Connection Configuration Exaplme > Wifi SSD e Wifi Password
  
 
 ```powershell
-idf.py [PORTA] build flash monitor
+idf.py -p [PORTA] build flash monitor
 ```
