@@ -13,6 +13,11 @@ private:
 
 public:
     string get(string webserver, string webpath, string params);
+    string post(string webserver, string webpath, string params, string body);
+    string put(string webserver, string webpath, string params);
+    string patch(string webserver, string webpath, string params);
+    string del(string webserver, string webpath, string params);
+    string head(string webserver, string webpath, string params);
 };
 
 #endif

@@ -64,6 +64,7 @@ string Requests::get(string webserver, string webpath, string params)
         .host = webserver.c_str(),
         .path = webpath.c_str(),
         .query = params.c_str(),
+         .method = HTTP_METHOD_GET,
         .event_handler = _http_event_handle,
         .user_data = local_response_buffer, // Pass address of local buffer to get response
     };
@@ -87,19 +88,25 @@ string Requests::get(string webserver, string webpath, string params)
     return RESPONSE_DATA;
 }
 
-string Requests::get(string webserver, string webpath, string params)
+string Requests::post(string webserver, string webpath, string params, string body)
 {
     esp_http_client_config_t config = {
         .host = webserver.c_str(),
         .path = webpath.c_str(),
         .query = params.c_str(),
+        .method = HTTP_METHOD_POST,
         .event_handler = _http_event_handle,
         .user_data = local_response_buffer, // Pass address of local buffer to get response
     };
     esp_http_client_handle_t client = esp_http_client_init(&config);
-
-    // GET
+    // POST
+        const char *post_data = body.c_str();
+    esp_http_client_set_header(client, "HeaderKey", "HeaderValue");
+    esp_http_client_set_header(client, "Content-Type", "application/json");
+    esp_http_client_set_post_field(client, post_data, strlen(post_data));
+    
     esp_err_t err = esp_http_client_perform(client);
+
     if (err == ESP_OK)
     {
         ESP_LOGI(TAG, "HTTP GET Status = %d, content_length = %d",
@@ -113,5 +120,138 @@ string Requests::get(string webserver, string webpath, string params)
     ESP_LOG_BUFFER_HEX(TAG, local_response_buffer, strlen(local_response_buffer));
     esp_http_client_cleanup(client);
 
+    return RESPONSE_DATA;
+}
+
+ string Requests::put(string webserver, string webpath, string params,  string body)
+{
+    esp_http_client_config_t config = {
+        .host = webserver.c_str(),
+        .path = webpath.c_str(),
+        .query = params.c_str(),
+        .method = HTTP_METHOD_PUT,
+        .event_handler = _http_event_handle,
+        .user_data = local_response_buffer, // Pass address of local buffer to get response
+    };
+    esp_http_client_handle_t client = esp_http_client_init(&config);
+    // PUT
+    const char *post_data = body.c_str();
+    esp_http_client_set_header(client, "HeaderKey", "HeaderValue");
+    esp_http_client_set_header(client, "Content-Type", "application/json");
+    esp_http_client_set_post_field(client, post_data, strlen(post_data));
+    
+    esp_err_t err = esp_http_client_perform(client);
+
+    if (err == ESP_OK)
+    {
+        ESP_LOGI(TAG, "HTTP GET Status = %d, content_length = %d",
+                 esp_http_client_get_status_code(client),
+                 esp_http_client_get_content_length(client));
+    }
+    else
+    {
+        ESP_LOGE(TAG, "HTTP GET request failed: %s", esp_err_to_name(err));
+    }
+    ESP_LOG_BUFFER_HEX(TAG, local_response_buffer, strlen(local_response_buffer));
+    esp_http_client_cleanup(client);
+
+    return RESPONSE_DATA;
+}
+
+ string Requests::patch(string webserver, string webpath, string params,  string body)
+{
+    esp_http_client_config_t config = {
+        .host = webserver.c_str(),
+        .path = webpath.c_str(),
+        .query = params.c_str(),
+        .method = HTTP_METHOD_PATCH,
+        .event_handler = _http_event_handle,
+        .user_data = local_response_buffer, // Pass address of local buffer to get response
+    };
+    esp_http_client_handle_t client = esp_http_client_init(&config);
+    // PATCH
+    const char *post_data = body.c_str();
+    esp_http_client_set_header(client, "HeaderKey", "HeaderValue");
+    esp_http_client_set_header(client, "Content-Type", "application/json");
+    esp_http_client_set_post_field(client, post_data, strlen(post_data));
+    
+    esp_err_t err = esp_http_client_perform(client);
+
+    if (err == ESP_OK)
+    {
+        ESP_LOGI(TAG, "HTTP GET Status = %d, content_length = %d",
+                 esp_http_client_get_status_code(client),
+                 esp_http_client_get_content_length(client));
+    }
+    else
+    {
+        ESP_LOGE(TAG, "HTTP GET request failed: %s", esp_err_to_name(err));
+    }
+    ESP_LOG_BUFFER_HEX(TAG, local_response_buffer, strlen(local_response_buffer));
+    esp_http_client_cleanup(client);
+    return RESPONSE_DATA;
+}
+
+ string Requests::del(string webserver, string webpath, string params)
+{
+    esp_http_client_config_t config = {
+        .host = webserver.c_str(),
+        .path = webpath.c_str(),
+        .query = params.c_str(),
+        .method = HTTP_METHOD_DELETE,
+        .event_handler = _http_event_handle,
+        .user_data = local_response_buffer, // Pass address of local buffer to get response
+    };
+    esp_http_client_handle_t client = esp_http_client_init(&config);
+    // Delete
+    esp_http_client_set_header(client, "HeaderKey", "HeaderValue");
+    esp_http_client_set_header(client, "Content-Type", "application/json");
+    
+    esp_err_t err = esp_http_client_perform(client);
+
+    if (err == ESP_OK)
+    {
+        ESP_LOGI(TAG, "HTTP GET Status = %d, content_length = %d",
+                 esp_http_client_get_status_code(client),
+                 esp_http_client_get_content_length(client));
+    }
+    else
+    {
+        ESP_LOGE(TAG, "HTTP GET request failed: %s", esp_err_to_name(err));
+    }
+    ESP_LOG_BUFFER_HEX(TAG, local_response_buffer, strlen(local_response_buffer));
+    esp_http_client_cleanup(client);
+    return RESPONSE_DATA;
+}
+
+ string Requests::head(string webserver, string webpath, string params)
+{
+    esp_http_client_config_t config = {
+        .host = webserver.c_str(),
+        .path = webpath.c_str(),
+        .query = params.c_str(),
+        .method = HTTP_METHOD_HEAD,
+        .event_handler = _http_event_handle,
+        .user_data = local_response_buffer, // Pass address of local buffer to get response
+    };
+    esp_http_client_handle_t client = esp_http_client_init(&config);
+    // Head
+    esp_http_client_set_header(client, "HeaderKey", "HeaderValue");
+    esp_http_client_set_header(client, "Content-Type", "application/json");
+    
+    esp_err_t err = esp_http_client_perform(client);
+
+    if (err == ESP_OK)
+    {
+        ESP_LOGI(TAG, "HTTP HEAD Status = %d, content_length = %d",
+                 esp_http_client_get_status_code(client),
+                 esp_http_client_get_content_length(client));
+    }
+    else
+    {
+        ESP_LOGE(TAG, "HTTP HEAD request failed: %s", esp_err_to_name(err));
+    }
+    ESP_LOG_BUFFER_HEX(TAG, local_response_buffer, strlen(local_response_buffer));
+    esp_http_client_cleanup(client);
     return RESPONSE_DATA;
 }
